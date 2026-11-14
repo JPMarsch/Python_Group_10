@@ -1,32 +1,32 @@
-"""G10 - Fixed Python workflow (baseline, no AI model).
+'''G10 - Fixed Python workflow (baseline, no AI model).
 
 Every question goes through the same three steps, always in the same order:
     1. list_datasets   - does the dataset exist?
     2. inspect_schema  - which columns and types?
     3. check_quality   - missing values and duplicate IDs?
-"""
-import re
-import time
+'''
+import re # for text patterns
+import time # for runtime
 from pathlib import Path
 
-import pandas as pd
+import pandas as pd # for reading / analyzing tables
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
-# ---------- the three steps ----------
+# ---------- 3 Steps ----------
 
-def list_datasets():
+def list_datasets(): # Does the dataset exist? 
     return [f.name for f in DATA_DIR.glob("*.csv")]
 
 
-def inspect_schema(dataset):
+def inspect_schema(dataset): # Which Column/Types does it hold?
     df = pd.read_csv(DATA_DIR / dataset)
     columns = [f"{col} ({df[col].dtype})" for col in df.columns]
     return f"{len(df)} rows. Columns: {', '.join(columns)}"
 
 
-def check_quality(dataset):
+def check_quality(dataset): # Check Missing values / Check duplicate IDs
     df = pd.read_csv(DATA_DIR / dataset)
     lines = []
 
@@ -41,7 +41,7 @@ def check_quality(dataset):
     return "\n".join(lines)
 
 
-# ---------- the fixed workflow ----------
+# ---------- "Static" Workflow ----------
 
 def fixed_workflow(question):
     match = re.search(r"\w+\.csv", question)            # find "<name>.csv" in the question
@@ -57,7 +57,7 @@ def fixed_workflow(question):
     return report, 3                                     # report, number of steps used
 
 
-# ---------- evaluation ----------
+# ---------- Evaluation ----------
 # Each question with the facts a correct answer must contain (the known errors in the CSV).
 
 QUESTIONS = [
