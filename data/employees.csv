@@ -1,0 +1,24 @@
+employee_id,name,department,age,salary,start_date,email
+1,Anna Mueller,Sales,34,52000,2019-03-15,anna.mueller@example.com
+2,Ben Schmidt,IT,29,61000,2020-07-01,ben.schmidt@example.com
+3,Clara Weber,HR,,48000,2018-11-20,clara.weber@example.com
+4,David Fischer,IT,41,72000,2015-02-10,
+5,Eva Wagner,Marketing,26,,2022-01-05,eva.wagner@example.com
+6,Felix Becker,Sales,38,55000,2017-09-12,felix.becker@example.com
+7,Greta Hoffmann,,31,50000,2021-04-18,greta.hoffmann@example.com
+8,Hannah Schulz,IT,35,68000,2016-06-30,hannah.schulz@example.com
+9,Jonas Koch,Finance,45,75000,,jonas.koch@example.com
+10,Lena Richter,Marketing,28,47000,2021-10-01,lena.richter@example.com
+6,Felix Becker,Sales,38,55000,2017-09-12,felix.becker@example.com
+11,Max Klein,Finance,33,,2019-08-22,
+12,Nina Wolf,HR,27,46000,2023-02-14,nina.wolf@example.com
+13,Oskar Neumann,IT,,64000,2020-12-01,oskar.neumann@example.com
+14,Paula Schwarz,Sales,30,51000,2022-05-09,paula.schwarz@example.com
+8,Hanna Schultz,IT,36,69000,2016-06-30,hanna.schultz@example.com
+15,Ralf Zimmermann,Finance,50,82000,2012-03-03,ralf.zimmermann@example.com
+16,Sara Braun,Marketing,24,43000,2024-01-15,sara.braun@example.com
+17,Tim Krueger,,39,58000,2018-07-07,tim.krueger@example.com
+18,Ulla Hartmann,HR,42,53000,2014-10-10,ulla.hartmann@example.com
+12,Nina Wolf,HR,27,46000,2023-02-14,nina.wolf@example.com
+19,Vera Lange,IT,32,,2021-09-01,vera.lange@example.com
+20,Yusuf Demir,Sales,37,56000,2019-01-20,yusuf.demir@example.com
