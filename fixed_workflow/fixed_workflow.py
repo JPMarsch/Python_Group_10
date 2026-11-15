@@ -1,86 +1,179 @@
-'''G10 - Fixed Python workflow (baseline, no AI model).
+"""
+G10 - Fixed Python workflow (baseline, no AI model).
 
 Every question goes through the same three steps, always in the same order:
     1. list_datasets   - does the dataset exist?
-    2. inspect_schema  - which columns and types?
+    2. inspect_schema  - which columns and data types?
     3. check_quality   - missing values and duplicate IDs?
-'''
-import re # for text patterns
-import time # for runtime
+
+Afterwards, each report is checked against the correct answer counted by hand.
+"""
+
+import time
 from pathlib import Path
 
-import pandas as pd # for reading / analyzing tables
+import pandas as pd
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
-# ---------- 3 Steps ----------
+# =====================================================================
+# PART 1: 3-Step Check
+# =====================================================================
 
-def list_datasets(): # Does the dataset exist? 
-    return [f.name for f in DATA_DIR.glob("*.csv")]
-
-
-def inspect_schema(dataset): # Which Column/Types does it hold?
-    df = pd.read_csv(DATA_DIR / dataset)
-    columns = [f"{col} ({df[col].dtype})" for col in df.columns]
-    return f"{len(df)} rows. Columns: {', '.join(columns)}"
-
-
-def check_quality(dataset): # Check Missing values / Check duplicate IDs
-    df = pd.read_csv(DATA_DIR / dataset)
-    lines = []
-
-    for col, n in df.isna().sum().items():
-        if n > 0:
-            lines.append(f"Missing {col}: {n}")
-
-    for emp_id, rows in df[df["employee_id"].duplicated(keep=False)].groupby("employee_id"):
-        kind = "exact copy" if len(rows.drop_duplicates()) == 1 else "conflicting data"
-        lines.append(f"Duplicate ID {emp_id}: {len(rows)}x, {kind}")
-
-    return "\n".join(lines)
+def list_datasets():
+    # Return the names of all CSV files in the data folder
+    names = []
+    for file in DATA_DIR.glob("*.csv"):
+        names.append(file.name)
+    return names
 
 
-# ---------- "Static" Workflow ----------
+def inspect_schema(dataset):
+    # number of rows, column names and data types
+    table = pd.read_csv(DATA_DIR / dataset)
+
+    text = "Rows: " + str(len(table)) + "\n"
+    text = text + "Columns:\n"
+    for column in table.columns:
+        data_type = str(table[column].dtype)
+        text = text + "  " + column + " (" + data_type + ")\n"
+    return text
+
+
+def check_quality(dataset):
+    # Count missing values per column or duplicate IDs
+    table = pd.read_csv(DATA_DIR / dataset)
+    text = ""
+
+    # --- Missing values ---
+    for column in table.columns:
+        number_missing = table[column].isna().sum()
+        if number_missing > 0:
+            text = text + "Missing " + column + ": " + str(number_missing) + "\n"
+
+    # --- Duplicate IDs ---
+    id_counts = table["employee_id"].value_counts()
+    for employee_id in sorted(id_counts.index):
+        count = id_counts[employee_id]
+        if count > 1:
+            rows_with_this_id = table[table["employee_id"] == employee_id]
+            different_rows = rows_with_this_id.drop_duplicates()
+            if len(different_rows) == 1:
+                kind = "exact copy"
+            else:
+                kind = "conflicting data"
+            text = text + "Duplicate ID " + str(employee_id) + ": " + str(count) + "x, " + kind + "\n"
+
+    return text
+
+
+# =====================================================================
+# PART 2: Fixed Workflow
+# =====================================================================
+
+def find_dataset_name(question):
+    # Return the first word in the question that ends with '.csv', or None."
+    for word in question.split():
+        word = word.strip(".,?!")          # remove punctuation, e.g. "customers.csv." -> "customers.csv"
+        if word.endswith(".csv"):
+            return word
+    return None
+
 
 def fixed_workflow(question):
-    match = re.search(r"\w+\.csv", question)            # find "<name>.csv" in the question
-    if not match:
-        return "ERROR: no dataset named in the question.", 0
 
-    dataset = match.group()
+    # Look for a file name in the question.
+    dataset = find_dataset_name(question)
+    if dataset is None:
+        report = "ERROR: no dataset named in the question."
+        return report, 0
+
+    # Step 1: does the dataset exist?
     available = list_datasets()
     if dataset not in available:
-        return f"ERROR: {dataset} not found. Available: {', '.join(available)}", 1
+        report = "ERROR: " + dataset + " not found. Available: " + ", ".join(available)
+        return report, 1
 
-    report = inspect_schema(dataset) + "\n" + check_quality(dataset)
-    return report, 3                                     # report, number of steps used
+    # Step 2 and step 3: always both, whatever the question asked.
+    report = inspect_schema(dataset) + check_quality(dataset)
+    return report, 3
 
 
-# ---------- Evaluation ----------
-# Each question with the facts a correct answer must contain (the known errors in the CSV).
+# =====================================================================
+# PART 3: Question + Answer key
+# =====================================================================
 
-QUESTIONS = [
-    ("Q1", "Which columns in employees.csv have missing values, and how many?",
-     ["Missing department: 2", "Missing age: 2", "Missing salary: 3",
-      "Missing start_date: 1", "Missing email: 2"]),
-    ("Q2", "Are there duplicate employee IDs in employees.csv?",
-     ["Duplicate ID 6", "Duplicate ID 8", "Duplicate ID 12", "conflicting data"]),
-    ("Q3", "What columns and data types does employees.csv have?",
-     ["employee_id", "name", "department", "age", "salary", "start_date", "email"]),
-    ("Q4", "Is the data clean enough to analyse salaries?",            # no dataset named
-     ["Missing salary: 3", "Duplicate ID"]),
-    ("Q5", "Check the quality of customers.csv.",                      # dataset does not exist
-     ["customers.csv not found"]),
+questions = [
+    {
+        "id": "Q1",
+        "question": "Which columns in employees.csv have missing values, and how many?",
+        "expected_facts": ["Missing department: 2", "Missing age: 2", "Missing salary: 3",
+                           "Missing start_date: 1", "Missing email: 2"],
+    },
+    {
+        "id": "Q2",
+        "question": "Are there duplicate employee IDs in employees.csv?",
+        "expected_facts": ["Duplicate ID 6", "Duplicate ID 8", "Duplicate ID 12", "conflicting data"],
+    },
+    {
+        "id": "Q3",
+        "question": "What columns and data types does employees.csv have?",
+        "expected_facts": ["employee_id", "name", "department", "age", "salary", "start_date", "email"],
+    },
+    {
+        "id": "Q4",
+        "question": "Is the data clean enough to analyse salaries?",   # no dataset named
+        "expected_facts": ["Missing salary: 3", "Duplicate ID"],
+    },
+    {
+        "id": "Q5",
+        "question": "Check the quality of customers.csv.",             # dataset does not exist
+        "expected_facts": ["customers.csv not found"],
+    },
 ]
 
+
+# =====================================================================
+# PART 4: Run each question and check report
+# =====================================================================
+
+results = []
+
+for q in questions:
+    print("=" * 60)
+    print(q["id"] + ": " + q["question"])
+
+    # Measure time per workflow 
+    start = time.perf_counter()
+    report, steps = fixed_workflow(q["question"])
+    runtime_ms = (time.perf_counter() - start) * 1000
+
+    print("--- Report ---")
+    print(report)
+
+    # Check every expected fact of the current question
+    print("--- Check against answer key ---")
+    found = 0
+    for fact in q["expected_facts"]:
+        if fact in report:
+            print("  found:     " + fact)
+            found = found + 1
+        else:
+            print("  NOT found: " + fact)
+
+    total = len(q["expected_facts"])
+    if found == total:
+        success = "yes"
+    else:
+        success = "no"
+
+    results.append([q["id"], success, str(found) + "/" + str(total), str(steps), f"{runtime_ms:.1f}"])
+
+
+# Print the summary table.
+print("=" * 60)
 print("| Question | Success | Facts found | Steps | Runtime (ms) |")
 print("|---|---|---|---|---|")
-for qid, question, facts in QUESTIONS:
-    start = time.perf_counter()
-    report, steps = fixed_workflow(question)
-    ms = (time.perf_counter() - start) * 1000
-
-    found = sum(fact in report for fact in facts)
-    success = "yes" if found == len(facts) else "no"
-    print(f"| {qid} | {success} | {found}/{len(facts)} | {steps} | {ms:.1f} |")
+for row in results:
+    print("| " + " | ".join(row) + " |")
