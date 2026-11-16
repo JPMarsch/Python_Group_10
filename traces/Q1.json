@@ -10,6 +10,6 @@
       "result": "Missing department: 2\nMissing age: 2\nMissing salary: 3\nMissing start_date: 1\nMissing email: 2\nDuplicate ID 6: 2x, exact copy\nDuplicate ID 8: 2x, conflicting data\nDuplicate ID 12: 2x, exact copy\n"
     }
   ],
-  "answer": "The following columns in **employees.csv** contain missing values:\n\n| Column      | Missing values |\n|-------------|----------------|\n| department  | 2 |\n| age         | 2 |\n| salary      | 3 |\n| start_date  | 1 |\n| email       | 2 |\n\nAll other columns have complete data.",
-  "runtime_ms": 1767.1
+  "answer": "The following columns in **employees.csv** contain missing values:\n\n| Column      | Number of missing entries |\n|------------|----------------------------|\n| department | 2 |\n| age        | 2 |\n| salary     | 3 |\n| start_date | 1 |\n| email      | 2 |\n\nThese are the only columns that have missing data in the file.",
+  "runtime_ms": 1388.0
 }

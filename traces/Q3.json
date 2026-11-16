@@ -3,6 +3,11 @@
   "model": "openai/gpt-oss-120b",
   "steps": [
     {
+      "tool": "list_datasets",
+      "arguments": {},
+      "result": "employees.csv"
+    },
+    {
       "tool": "inspect_schema",
       "arguments": {
         "dataset": "employees.csv"
@@ -10,6 +15,6 @@
       "result": "Rows: 23\nColumns:\n  employee_id (int64)\n  name (str)\n  department (str)\n  age (float64)\n  salary (float64)\n  start_date (str)\n  email (str)\n"
     }
   ],
-  "answer": "The **employees.csv** file has 23 rows and the following columns with their data types:\n\n| Column | Data Type |\n|--------|-----------|\n| **employee_id** | int64 |\n| **name** | string |\n| **department** | string |\n| **age** | float64 |\n| **salary** | float64 |\n| **start_date** | string |\n| **email** | string |",
-  "runtime_ms": 930.0
+  "answer": "The **employees.csv** dataset contains **23 rows** and the following columns with their data types:\n\n| Column | Data Type |\n|--------|-----------|\n| employee_id | int64 |\n| name | string |\n| department | string |\n| age | float64 |\n| salary | float64 |\n| start_date | string |\n| email | string |",
+  "runtime_ms": 1134.1
 }
