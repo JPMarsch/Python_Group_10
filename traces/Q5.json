@@ -1,0 +1,19 @@
+{
+  "question": "Check the quality of customers.csv.",
+  "model": "openai/gpt-oss-120b",
+  "steps": [
+    {
+      "tool": "check_quality",
+      "arguments": {
+        "dataset": "customers.csv"
+      },
+      "result": "ERROR: customers.csv not found. Available: employees.csv"
+    },
+    {
+      "tool": "list_datasets",
+      "arguments": {},
+      "result": "employees.csv"
+    }
+  ],
+  "answer": "I\u2019m sorry\u2014I couldn\u2019t find a file named **customers.csv** in the current environment. The only CSV dataset available right now is **employees.csv**. Let me know if you\u2019d like me to check the quality of that file or if there\u2019s another dataset you\u2019d like to work with."
+}
