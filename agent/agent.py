@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -98,7 +99,9 @@ questions = {
 }
 
 for question_id, question in questions.items():
+    start = time.perf_counter()
     trace = run_agent(question)
+    trace["runtime_ms"] = round((time.perf_counter() - start) * 1000, 1)
     save_trace(trace, question_id)
 
     print("=" * 60)
