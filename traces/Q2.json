@@ -10,6 +10,7 @@
       "result": "Missing department: 2\nMissing age: 2\nMissing salary: 3\nMissing start_date: 1\nMissing email: 2\nDuplicate ID 6: 2x, exact copy\nDuplicate ID 8: 2x, conflicting data\nDuplicate ID 12: 2x, exact copy\n"
     }
   ],
-  "answer": "Yes. The `employees.csv` file contains duplicate employee IDs:\n\n- **ID\u202f6** appears twice (exact duplicate rows)  \n- **ID\u202f8** appears twice (rows have conflicting data)  \n- **ID\u202f12** appears twice (exact duplicate rows)\n\nSo there are duplicate IDs in the dataset.",
-  "runtime_ms": 1158.7
+  "answer": "Yes. The `employees.csv` file contains duplicate employee IDs. The duplicates found are:\n\n| Employee ID | Occurrences | Note |\n|-------------|-------------|------|\n| 6           | 2           | Exact copies |\n| 8           | 2           | Conflicting data |\n| 12          | 2           | Exact copies |\n\nThese duplicate IDs indicate that the same identifier appears more than once in the dataset, with ID\u202f8 even having differing data between the two rows.",
+  "runtime_ms": 1134.6,
+  "repair": true
 }

@@ -131,6 +131,11 @@ questions = [
         "question": "Check the quality of customers.csv.",             # dataset does not exist
         "expected_facts": ["customers.csv not found"],
     },
+    {
+        "id": "Q6",
+        "question": "How many employees are in employees.csv?",       # 23 rows, but only 20 unique IDs
+        "expected_facts": ["Rows: 23", "Duplicate ID 6", "Duplicate ID 8", "Duplicate ID 12"],
+    },
 ]
 
 
